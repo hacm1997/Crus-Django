@@ -1,0 +1,150 @@
+<div class="modal-dialog modal-lg" role="document">
+
+    <form id="form-create" role="form" action="{% url 'addsolicitud' %}" method="post"  class="form-inline">
+
+        {% csrf_token %}
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Agregando Solicitud</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        
+            <div class="modal-body">
+                <div class="modal-body">
+                    <h3>Ingrese información</h3>
+                    <ul class="list-group">
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Fecha:</strong> <input id="fecha_min" type="date" class="form-control" name="fecha">
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Hora de atención:</strong> <input type="time" class="form-control" name="hora_atencion">
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Hora de atención final:</strong> <input type="time" class="form-control" name="hora_final_atencion">
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Empresa:</strong> <input type="text" class="form-control" name="empresa">
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+
+                            <strong>Departamento:</strong>
+                            <select id="dpto" class="form-control" onchange="municipio()">
+                                <option value="0">---------</option>
+                            </select>
+                        </li>
+                            <!--<input class="form-control" type="text" id='showDpto' name="cita_dpto" hidden> Guarda el dpto-->
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Ciudad/Municipio:</strong>
+                            <select id="ciudad" class="form-control" onchange="municipioSave()">
+                                <option></option>
+                            </select>
+                            <input class="form-control" type="text" id='showCity' name="ciudad" hidden> <!--Guarda la ciudad-->
+                        </li>
+
+                        <!--<li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Ciudad:</strong> <input type="text" class="form-control" name="ciudad">
+                        </li>-->
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Asunto:</strong> <input type="text" class="form-control" name="asunto">
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Respuesta:</strong> <input type="text" class="form-control" name="respuesta">
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center" for="inputAddress">
+                            <strong>Fecha solicitud:</strong> <input id="fecha_sol" type="date" class="form-control"name="fecha_solicitud">
+                        </li>
+
+                    </ul>
+                </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-info" onclick="registro(listado());">Confirmar</button>
+            </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+//AJAX DPTOS Y CIUDADES COLOMBIA
+dptos = [];
+
+arrayData = [];
+$.ajax({
+    url: "https://www.datos.gov.co/resource/xdk5-pm3f.json",
+    type: "GET",
+    data: {
+      "$limit" : 5000,
+      "$$app_token" : "bliDhQdnagTXSRCEDeqeHBWlG"
+    }
+}).done(function(data) {
+    //alert("Retrieved " + data.length + " records from the dataset!");
+    
+    //console.log(data);
+    arrayData = data;
+    for(let d = 0;d < data.length;d++){
+        
+        //console.log(data[d]['departamento'])
+        
+        if(dptos.includes(data[d]['departamento'])){
+            
+        }else{
+            dptos.push(data[d]['departamento']);
+            
+        }
+
+    }
+    //console.log("Departamentos", dptos.sort());
+    for(let dt = 0;dt < dptos.sort().length;dt++){
+        $select = document.querySelector("#dpto");
+        option = document.createElement('option');
+        option.text = dptos[dt];
+        option.value = dptos[dt];
+        
+        $select.appendChild(option);
+        //console.log(dptos[dt][0])
+    }
+    //console.log(arrayData);
+
+});
+
+function municipio(){
+    municipios = [];
+    $('#ciudad').empty().append('-----');
+    
+    //console.log(document.getElementById("dpto").value);
+    for(let m = 0;m < arrayData.length;m++){
+        if(arrayData[m]["departamento"] == document.getElementById("dpto").value){
+            municipios.push(arrayData[m]["municipio"]);
+        }
+    }
+    //console.log(municipios);
+    for(let mn = 0;mn < municipios.sort().length;mn++){
+        $select = document.querySelector("#ciudad");
+        option = document.createElement('option');
+        option.text = municipios[mn];
+        option.value = municipios[mn];
+        
+        $select.appendChild(option);
+    }
+
+    document.getElementById('showDpto').value=document.getElementById('dpto').value;
+    document.getElementById('showCity').value=document.getElementById('ciudad').value;
+    
+}
+//Manda a un input el municipio o ciudad
+function municipioSave(){
+    document.getElementById('showCity').value=document.getElementById('ciudad').value;
+}
+</script>
