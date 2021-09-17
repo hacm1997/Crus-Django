@@ -40,7 +40,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-ROOT_URLCONF = 'crud.urls'
+ROOT_URLCONF = 'crud.crud.urls'
 
 TEMPLATES = [
     {
